@@ -3,6 +3,7 @@
 
 import os
 import datetime
+import unittest
 from prettytable import PrettyTable
 
 def genFamilyParser():
@@ -85,6 +86,8 @@ def genFamilyParser():
     print('Families')
     print(familyTable)
 
+    return personDic, familyDic
+
 
 
 
@@ -130,5 +133,6 @@ def checkIfValidTagMonth(line, tags, tags1):
                 return False
         else:
             return False
+
 
 genFamilyParser()
