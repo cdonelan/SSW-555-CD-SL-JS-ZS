@@ -75,9 +75,11 @@ def genFamilyParser():
                  currentDic[currentID][dateType] = ln[4] + '-' + datesDic[ln[3]] + '-' + ln[2] #make date in the proper format as shown in the example on canvas
                  if currentDic == personDic:
                      personDic[currentID]['Age'] = getIndividualAge(currentID, personDic) #if we are in the person dictionary than give that person an age
-
+                     
     
     peopleTable = PrettyTable(["ID", 'Name', 'Gender', 'Birthday', 'Age', 'Alive', 'Death', 'Child', 'Spouse'])
+
+    personDic = checkUniqueNameBirthday(personDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -92,7 +94,6 @@ def genFamilyParser():
         familyTable.add_row(row)
     print('Families')
     print(familyTable)
-
 
 
 
@@ -138,5 +139,23 @@ def checkIfValidTagMonth(line, tags, tags1):
                 return False
         else:
             return False
+
+def checkUniqueNameBirthday(personDic):
+    names = []
+    birthdays = []
+    values = {}
+    for key,value in sorted(personDic.items()):
+        if value['Birthday'] not in birthdays and value['Name'] not in names:
+            names.append(value['Name'])
+            birthdays.append(value['Birthday'])
+            values[key] = value
+        if value['Name'] in names and value['Birthday'] not in birthdays:
+            names.append(value['Name'])
+            birthdays.append(value['Birthday'])
+            values[key] = value
+    return values
+    
+    
+        
 
 genFamilyParser()
