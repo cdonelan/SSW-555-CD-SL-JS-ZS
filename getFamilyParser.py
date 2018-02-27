@@ -82,6 +82,7 @@ def genFamilyParser():
 
     personDic = checkUniqueNameBirthday(personDic)
     checkMalesNamesAreSame(personDic, familyDic)
+    checkForPolygamy(familyDic, personDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -170,6 +171,34 @@ def checkMalesNamesAreSame(personDic, familyDic):
                 raise ValueError('Male child does not have same last name as father.')
 
 
+def checkForPolygamy(familyDic, personDic):
+    marriages = {}
+    for key,family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if "Divorced" in family:
+            continue
+        if not isPersonAlive(husbandID, personDic):
+            continue
+        if not isPersonAlive(wifeID, personDic):
+            continue
+        
+        
+        if wifeID in marriages:
+            marriages[wifeID] += 1
+        else:
+            marriages[wifeID] = 1
+
+        if husbandID in marriages:
+            marriages[husbandID] += 1
+        else:
+            marriages[husbandID] = 1
+             
+    for key, count in marriages.items():
+      if count > 1:
+        raise ValueError('Polygamy has occurred.')        
+
+    
 
 # better smell, instead of duplicating if code, made a function
 def checkIfKeyInDictionaryExists(line, dict):
@@ -191,6 +220,11 @@ def getChildren(family, personDic):
         children.append(getPerson(childrenID, personDic))
     return children
 
+def isPersonAlive(personID, personDic):
+  if getPerson(personID, personDic)["Alive"] == "True":
+      return True
+  else:
+      return False
 
 
 genFamilyParser()
