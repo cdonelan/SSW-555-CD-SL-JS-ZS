@@ -26,31 +26,29 @@ def genFamilyParser():
     currentID = ""
     currentDic = {}
     dateType = ''
-    i = 0
+    duplicateCheck = 0
     for line in infile:
         if line[0] == '0':
-            i = 0
+            duplicateCheck = 0
             if checkIfValidTagExc(line, firstLevelExceptions) is True:
                 ln = line.split()
                 if ln[2] == 'INDI':
-                    if ln[1].replace("@", "") in personDic.keys(): #if key already in person dictionary
-                        i = 1
-
+                    if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),personDic): #if key already in person dictionary
+                        duplicateCheck = 1
                         continue #go to next iteration and do not include
 
                     currentID = ln[1].replace("@", "") #this replaces the"@" that was seen in the ID's of the GEDCOM file
                     personDic[currentID] = {'Name': '', 'Sex': '', 'Birthday': '', 'Age': '', 'Death': 'N/A', 'Alive': 'True', 'Spouse': 'N/A', 'Child': 'N/A'} #initializes our dictionaries
                     currentDic = personDic #we are now editing the individual dictionary
                 elif ln[2] == 'FAM':
-                    if ln[1].replace("@", "") in familyDic.keys(): #if key already in family dictionary
-                        i = 1
-
+                    if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),familyDic): #if key already in family dictionary
+                        duplicateCheck = 1
                         continue #go to next iteration and do not include
 
                     currentID = ln[1].replace("@", "")
                     familyDic[currentID] = {'Marriage': '', 'Husband ID': '', 'Husband Name': '', 'Wife ID': '', 'Wife Name': '','Children': [], 'Divorce': 'N/A'}  #initializes our dictionaries
                     currentDic = familyDic #we are now editing the family dictionary
-        elif line[0] == '1' and i != 1:
+        elif line[0] == '1' and duplicateCheck != 1:
             if checkIfValidTag(line, secondLevelTags) is True:
                ln = line.split()
                if ln[1] in importantDateDic.keys():
@@ -74,7 +72,7 @@ def genFamilyParser():
                        familyDic[currentID][tags[1]] = personDic[ln[2].replace("@", "")]['Name'] #put parents in the family dictionary
                    else:
                        familyDic[currentID]['Children'].append(ln[2].replace("@", "")) #put children in the family dictionary
-        elif line[0] == '2' and i != 1:
+        elif line[0] == '2' and duplicateCheck != 1:
             if checkIfValidTagMonth(line, thirdLevelTags, thirdLevelTagMonths) is True:
                  ln = line.split()
                  currentDic[currentID][dateType] = ln[4] + '-' + datesDic[ln[3]] + '-' + ln[2] #make date in the proper format as shown in the example on canvas
@@ -162,6 +160,13 @@ def checkUniqueNameBirthday(personDic):
             birthdays.append(value['Birthday'])
             values[key] = value
     return values
+
+# better smell, instead of duplicating if code, made a function
+def checkIfKeyInDictionaryExists(line, dict):
+    if line in dict.keys():
+        return True
+    else:
+        return False
     
     
 
