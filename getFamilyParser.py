@@ -81,6 +81,7 @@ def genFamilyParser():
     peopleTable = PrettyTable(["ID", 'Name', 'Gender', 'Birthday', 'Age', 'Alive', 'Death', 'Child', 'Spouse'])
 
     personDic = checkUniqueNameBirthday(personDic)
+    checkMalesNamesAreSame(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -159,13 +160,37 @@ def checkUniqueNameBirthday(personDic):
             values[key] = value
     return values
 
+def checkMalesNamesAreSame(personDic, familyDic):
+    for key,family in familyDic.items():
+        father = getPerson(family["Husband ID"], personDic)
+        fathersLastName = getLastName(father)
+        children = getChildren(family, personDic)
+        for child in children:
+            if child["Sex"] == "M" and getLastName(child) != fathersLastName:
+                raise ValueError('Male child does not have same last name as father.')
+
+
+
 # better smell, instead of duplicating if code, made a function
 def checkIfKeyInDictionaryExists(line, dict):
     if line in dict.keys():
         return True
     else:
         return False
+
+def getPerson(id, personDic):
+    return personDic[id]
+
+def getLastName(person):
+    return person.get("Name").split('/')[1]
     
-    
+def getChildren(family, personDic):
+    childrenIDs = family.get("Children")
+    children = []
+    for childrenID in childrenIDs:
+        children.append(getPerson(childrenID, personDic))
+    return children
+
+
 
 genFamilyParser()
