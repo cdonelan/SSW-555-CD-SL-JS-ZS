@@ -3,6 +3,7 @@
 
 import os
 import datetime
+import unittest
 from prettytable import PrettyTable
 
 def genFamilyParser():
@@ -34,14 +35,18 @@ def genFamilyParser():
                 if ln[2] == 'INDI':
                     if ln[1].replace("@", "") in personDic.keys(): #if key already in person dictionary
                         i = 1
+
                         continue #go to next iteration and do not include
+
                     currentID = ln[1].replace("@", "") #this replaces the"@" that was seen in the ID's of the GEDCOM file
                     personDic[currentID] = {'Name': '', 'Sex': '', 'Birthday': '', 'Age': '', 'Death': 'N/A', 'Alive': 'True', 'Spouse': 'N/A', 'Child': 'N/A'} #initializes our dictionaries
                     currentDic = personDic #we are now editing the individual dictionary
                 elif ln[2] == 'FAM':
                     if ln[1].replace("@", "") in familyDic.keys(): #if key already in family dictionary
                         i = 1
+
                         continue #go to next iteration and do not include
+
                     currentID = ln[1].replace("@", "")
                     familyDic[currentID] = {'Marriage': '', 'Husband ID': '', 'Husband Name': '', 'Wife ID': '', 'Wife Name': '','Children': [], 'Divorce': 'N/A'}  #initializes our dictionaries
                     currentDic = familyDic #we are now editing the family dictionary
@@ -95,6 +100,8 @@ def genFamilyParser():
     print('Families')
     print(familyTable)
 
+    return personDic, familyDic
+
 
 
 def getIndividualAge(personID, dic):
@@ -140,6 +147,7 @@ def checkIfValidTagMonth(line, tags, tags1):
         else:
             return False
 
+
 def checkUniqueNameBirthday(personDic):
     names = []
     birthdays = []
@@ -156,6 +164,5 @@ def checkUniqueNameBirthday(personDic):
     return values
     
     
-        
 
 genFamilyParser()
