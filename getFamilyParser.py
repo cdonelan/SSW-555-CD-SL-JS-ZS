@@ -36,7 +36,6 @@ def genFamilyParser():
                     if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),personDic): #if key already in person dictionary
                         duplicateCheck = 1
                         continue #go to next iteration and do not include
-
                     currentID = ln[1].replace("@", "") #this replaces the"@" that was seen in the ID's of the GEDCOM file
                     personDic[currentID] = {'Name': '', 'Sex': '', 'Birthday': '', 'Age': '', 'Death': 'N/A', 'Alive': 'True', 'Spouse': 'N/A', 'Child': 'N/A'} #initializes our dictionaries
                     currentDic = personDic #we are now editing the individual dictionary
@@ -44,7 +43,6 @@ def genFamilyParser():
                     if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),familyDic): #if key already in family dictionary
                         duplicateCheck = 1
                         continue #go to next iteration and do not include
-
                     currentID = ln[1].replace("@", "")
                     familyDic[currentID] = {'Marriage': '', 'Husband ID': '', 'Husband Name': '', 'Wife ID': '', 'Wife Name': '','Children': [], 'Divorce': 'N/A'}  #initializes our dictionaries
                     currentDic = familyDic #we are now editing the family dictionary
