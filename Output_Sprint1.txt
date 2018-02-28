@@ -1,3 +1,15 @@
+ISSUES:
+
+duplicate individual found, 1st one being taken
+Person detected with an age of over 150 years, as shown in table below.
+Person found with birthday past todays date, as shown in table below.
+duplicate family found, 1st one being taken
+duplicate name and birthday found, first person being taken
+Male child does not have same last name as father, check the table below.
+Wife ID in marriages twice without divorce or death
+Polygamy has occurred. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.
+
+
 Individuals
 +-----+----------------------+--------+------------+-----+-------+------------+-------+--------+
 |  ID |         Name         | Gender |  Birthday  | Age | Alive |   Death    | Child | Spouse |
@@ -16,6 +28,9 @@ Individuals
 | I12 |   Bill /Michaels/    |   M    | 1960-09-4  |  57 |  True |    N/A     |  F04  |  N/A   |
 | I13 |    Eric /Murphy/     |   M    | 1937-04-6  |  80 |  True |    N/A     |  N/A  |  F05   |
 | I14 | Christina /Cameron/  |   F    | 1938-06-6  |  79 |  True |    N/A     |  N/A  |  F05   |
+| I16 |   Diana /Cameron/    |   F    | 1850-06-6  | 167 |  True |    N/A     |  N/A  |  F05   |
+| I17 |    Kim /Cameron/     |   F    | 2020-06-6  |  -3 |  True |    N/A     |  N/A  |  F05   |
+| I18 |     Jim /Lynes/      |   F    | 1950-06-6  |  67 |  True |    N/A     |  N/A  |  F05   |
 +-----+----------------------+--------+------------+-----+-------+------------+-------+--------+
 Families
 +-----+------------+----------+------------+-----------------+---------+----------------------+----------------+
@@ -26,4 +41,5 @@ Families
 | F03 | 2002-10-14 |   N/A    |    I04     |  Bill /Murphy/  |   I03   | Jennifer /Michaels/  | ['I05', 'I06'] |
 | F04 | 1955-07-14 |   N/A    |    I10     | Ian /Michaels/  |   I11   |   Noelle /Graham/    | ['I03', 'I12'] |
 | F05 | 1965-04-28 |   N/A    |    I13     |  Eric /Murphy/  |   I14   | Christina /Cameron/  |    ['I04']     |
+| F06 | 1965-04-28 |   N/A    |    I18     |   Jim /Lynes/   |   I14   | Christina /Cameron/  |    ['I04']     |
 +-----+------------+----------+------------+-----------------+---------+----------------------+----------------+
