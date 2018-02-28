@@ -34,7 +34,8 @@ def genFamilyParser():
                 ln = line.split()
                 if ln[2] == 'INDI':
                     if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),personDic): #if key already in person dictionary
-                        print('duplicate individual found, 1st one being taken')
+                        print('US22: duplicate individual found, 1st one being taken')
+                        print('User being taken: ' + currentID + ' ' + personDic[currentID]['Name'])
                         duplicateCheck = 1
                         continue #go to next iteration and do not include
                     currentID = ln[1].replace("@", "") #this replaces the"@" that was seen in the ID's of the GEDCOM file
@@ -42,11 +43,12 @@ def genFamilyParser():
                     currentDic = personDic #we are now editing the individual dictionary
                 elif ln[2] == 'FAM':
                     if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),familyDic): #if key already in family dictionary
-                        print('duplicate family found, 1st one being taken')
+                        print('US 22: duplicate family found, 1st one being taken')
+                        print('Family being taken: ' + currentID + ' Husband ID: ' + familyDic[currentID]['Husband Name'])
                         duplicateCheck = 1
                         continue #go to next iteration and do not include
                     currentID = ln[1].replace("@", "")
-                    familyDic[currentID] = {'Marriage': '', 'Husband ID': '', 'Husband Name': '', 'Wife ID': '', 'Wife Name': '','Children': [], 'Divorce': 'N/A'}  #initializes our dictionaries
+                    familyDic[currentID] = {'Marriage': '', 'Husband Name': '', 'Husband Name': '', 'Wife ID': '', 'Wife Name': '','Children': [], 'Divorce': 'N/A'}  #initializes our dictionaries
                     currentDic = familyDic #we are now editing the family dictionary
         elif line[0] == '1' and duplicateCheck != 1:
             if checkIfValidTag(line, secondLevelTags) is True:
@@ -80,7 +82,7 @@ def genFamilyParser():
                      personDic[currentID]['Age'] = getIndividualAge(currentID, personDic) #if we are in the person dictionary than give that person an age
                      
                  testDate = datetime.datetime.strptime(currentDic[currentID][dateType], '%Y-%m-%d').date()
-                 checkIfValidDate(testDate)  
+                 checkIfValidDate(currentID, currentDic, testDate)  
                     
     peopleTable = PrettyTable(["ID", 'Name', 'Gender', 'Birthday', 'Age', 'Alive', 'Death', 'Child', 'Spouse'])
 
@@ -120,7 +122,7 @@ def getIndividualAge(personID, dic):
         days = (deathDate - birthdayDate).days
         years = days/365
         
-    checkIfValidAge(int(years))
+    checkIfValidAge(personID, dic, int(years))
     
     return str(int(years))
 
@@ -153,6 +155,7 @@ def checkIfValidTagMonth(line, tags, tags1):
 def checkUniqueNameBirthday(personDic):
     names = []
     birthdays = []
+    excluded = []
     values = {}
     checker = 0
     for key,value in sorted(personDic.items()):
@@ -165,9 +168,13 @@ def checkUniqueNameBirthday(personDic):
             birthdays.append(value['Birthday'])
             values[key] = value
         else:
+            excluded.append(key)
             checker += 1
     if checker > 1:
-        print('duplicate name and birthday found, first person being taken')
+        print('US 23: duplicate names and birthday found, this being is being excluded')
+        for i in excluded:
+            if i not in values.keys():
+                print('Person being excluded: ' + i + ' ' + personDic[i]['Name'])
     return values
 
 def checkMalesNamesAreSame(personDic, familyDic):
@@ -177,7 +184,8 @@ def checkMalesNamesAreSame(personDic, familyDic):
         children = getChildren(family, personDic)
         for child in children:
             if child["Sex"] == "M" and getLastName(child) != fathersLastName:
-                print('Male child does not have same last name as father, check the table below.')
+                print('US 16: Male child does not have same last name as father, check the table below.')
+                print('Male child is: ' + child['Name'])
 
 def checkForPolygamy(familyDic, personDic):
     marriages = {}
@@ -193,19 +201,21 @@ def checkForPolygamy(familyDic, personDic):
         
         if wifeID in marriages:
             print('Wife ID in marriages twice without divorce or death')
+            print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
             marriages[wifeID] += 1
         else:
             marriages[wifeID] = 1
 
         if husbandID in marriages:
             print('Husband ID in marriages twice without divorce or death')
+            print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID])
             marriages[husbandID] += 1
         else:
             marriages[husbandID] = 1
              
     for key, count in marriages.items():
       if count > 1:
-        print('Polygamy has occurred. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.')        
+        print('US11, US05, US06: Polygamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.')        
 
 # better smell, instead of duplicating if code, made a function
 def checkIfKeyInDictionaryExists(line, dict):
@@ -233,13 +243,15 @@ def isPersonAlive(personID, personDic):
   else:
       return False
 
-def checkIfValidDate(testDate):
+def checkIfValidDate(personID, dic, testDate):
     currentDate = datetime.date.today()
     if currentDate < testDate:
-        print('Person found with birthday past todays date, as shown in table below.')
+        print('US01: Person found with birthday past todays date, as shown in table below.')
+        print('Person is: ' + personID + ' ' + dic[personID]['Name'])
         
-def checkIfValidAge(age):
+def checkIfValidAge(personID, dic, age):
     if age > 150:
-        print('Person detected with an age of over 150 years, as shown in table below.')
+        print('US07: Person detected with an age of over 150 years, as shown in table below.')
+        print('Person is: ' + personID + ' ' + dic[personID]['Name'])
 
 genFamilyParser()

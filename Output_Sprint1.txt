@@ -1,14 +1,27 @@
 ISSUES:
 
-duplicate individual found, 1st one being taken
-Person detected with an age of over 150 years, as shown in table below.
-Person found with birthday past todays date, as shown in table below.
-duplicate family found, 1st one being taken
-duplicate name and birthday found, first person being taken
-Male child does not have same last name as father, check the table below.
-Wife ID in marriages twice without divorce or death
-Polygamy has occurred. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.
+US22: duplicate individual found, 1st one being taken
+User being taken: I01 Shane /Smith/
 
+US07: Person detected with an age of over 150 years, as shown in table below.
+Person is: I16 Diana /Cameron/ 
+
+US01: Person found with birthday past todays date, as shown in table below.
+Person is: I17 Kim /Cameron/ 
+
+US 22: duplicate family found, 1st one being taken
+Family being taken: F01 Husband ID: John /Smith/ 
+
+US 23: duplicate names and birthday found, this being is being excluded
+Person being excluded: I15 Shane /Smith/ 
+
+US 16: Male child does not have same last name as father, check the table below.
+Male child is: Bill /Murphy/ 
+
+Wife ID in marriages twice without divorce or death
+Wife ID is: I14 Christina /Cameron/ 
+
+US11, US05, US06: Polygamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.
 
 Individuals
 +-----+----------------------+--------+------------+-----+-------+------------+-------+--------+
