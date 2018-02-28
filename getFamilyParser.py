@@ -117,6 +117,9 @@ def getIndividualAge(personID, dic):
     else:
         days = (deathDate - birthdayDate).days
         years = days/365
+        
+    checkIfValidAge(int(years))
+    
     return str(int(years))
 
 def checkIfValidTag(line, tags):
@@ -225,5 +228,9 @@ def checkIfValidDate(testDate):
     currentDate = datetime.date.today()
     if currentDate < testDate:
         raise ValueError('No date should be after current date')
+        
+def checkIfValidAge(age):
+    if age > 150:
+        raise ValueError('Age of any individual cannot exceed 150 years')
 
 genFamilyParser()
