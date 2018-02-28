@@ -201,6 +201,7 @@ def checkForPolygamy(familyDic, personDic):
         
         if wifeID in marriages:
             print('Wife ID in marriages twice without divorce or death')
+            print('Family ID is: ' + key)
             print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
             marriages[wifeID] += 1
         else:
@@ -208,6 +209,7 @@ def checkForPolygamy(familyDic, personDic):
 
         if husbandID in marriages:
             print('Husband ID in marriages twice without divorce or death')
+            print('Family ID is: ' + key)
             print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID])
             marriages[husbandID] += 1
         else:

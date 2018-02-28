@@ -1,7 +1,7 @@
 ISSUES:
 
 US22: duplicate individual found, 1st one being taken
-User being taken: I01 Shane /Smith/
+User being taken: I01 Shane /Smith/ 
 
 US07: Person detected with an age of over 150 years, as shown in table below.
 Person is: I16 Diana /Cameron/ 
@@ -16,11 +16,11 @@ US 23: duplicate names and birthday found, this being is being excluded
 Person being excluded: I15 Shane /Smith/ 
 
 US 16: Male child does not have same last name as father, check the table below.
-Male child is: Bill /Murphy/ 
+Male child is: Bill /Murphy/
 
 Wife ID in marriages twice without divorce or death
+Family ID is: F06
 Wife ID is: I14 Christina /Cameron/ 
-
 US11, US05, US06: Polygamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.
 
 Individuals
