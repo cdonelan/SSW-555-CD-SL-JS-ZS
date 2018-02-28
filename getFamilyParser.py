@@ -177,7 +177,7 @@ def checkMalesNamesAreSame(personDic, familyDic):
         children = getChildren(family, personDic)
         for child in children:
             if child["Sex"] == "M" and getLastName(child) != fathersLastName:
-                print('Male child does not have same last name as father.')
+                print('Male child does not have same last name as father, check the table below.')
 
 def checkForPolygamy(familyDic, personDic):
     marriages = {}
@@ -203,7 +203,7 @@ def checkForPolygamy(familyDic, personDic):
              
     for key, count in marriages.items():
       if count > 1:
-        print('Polygamy has occurred. This includes either marriage happening before divorce, or marriage happening before a spouse death')        
+        print('Polygamy has occurred. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.')        
 
 # better smell, instead of duplicating if code, made a function
 def checkIfKeyInDictionaryExists(line, dict):
@@ -234,10 +234,10 @@ def isPersonAlive(personID, personDic):
 def checkIfValidDate(testDate):
     currentDate = datetime.date.today()
     if currentDate < testDate:
-        print('Person found with birthday past todays date')
+        print('Person found with birthday past todays date, as shown in table below.')
         
 def checkIfValidAge(age):
     if age > 150:
-        print('Person detected with an age of over 150 years')
+        print('Person detected with an age of over 150 years, as shown in table below.')
 
 genFamilyParser()
