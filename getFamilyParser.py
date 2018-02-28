@@ -77,7 +77,9 @@ def genFamilyParser():
                  if currentDic == personDic:
                      personDic[currentID]['Age'] = getIndividualAge(currentID, personDic) #if we are in the person dictionary than give that person an age
                      
-    
+                 testDate = datetime.datetime.strptime(currentDic[currentID][dateType], '%Y-%m-%d').date()
+                 checkIfValidDate(testDate)  
+                    
     peopleTable = PrettyTable(["ID", 'Name', 'Gender', 'Birthday', 'Age', 'Alive', 'Death', 'Child', 'Spouse'])
 
     personDic = checkUniqueNameBirthday(personDic)
@@ -99,8 +101,6 @@ def genFamilyParser():
     print(familyTable)
 
     return personDic, familyDic
-
-
 
 def getIndividualAge(personID, dic):
     currentDate = datetime.date.today()
@@ -145,7 +145,6 @@ def checkIfValidTagMonth(line, tags, tags1):
         else:
             return False
 
-
 def checkUniqueNameBirthday(personDic):
     names = []
     birthdays = []
@@ -170,7 +169,6 @@ def checkMalesNamesAreSame(personDic, familyDic):
             if child["Sex"] == "M" and getLastName(child) != fathersLastName:
                 raise ValueError('Male child does not have same last name as father.')
 
-
 def checkForPolygamy(familyDic, personDic):
     marriages = {}
     for key,family in familyDic.items():
@@ -182,7 +180,6 @@ def checkForPolygamy(familyDic, personDic):
             continue
         if not isPersonAlive(wifeID, personDic):
             continue
-        
         
         if wifeID in marriages:
             marriages[wifeID] += 1
@@ -197,8 +194,6 @@ def checkForPolygamy(familyDic, personDic):
     for key, count in marriages.items():
       if count > 1:
         raise ValueError('Polygamy has occurred.')        
-
-    
 
 # better smell, instead of duplicating if code, made a function
 def checkIfKeyInDictionaryExists(line, dict):
@@ -226,5 +221,9 @@ def isPersonAlive(personID, personDic):
   else:
       return False
 
+def checkIfValidDate(testDate):
+    currentDate = datetime.date.today()
+    if currentDate < testDate:
+        raise ValueError('No date should be after current date')
 
 genFamilyParser()
