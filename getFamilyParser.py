@@ -34,6 +34,7 @@ def genFamilyParser():
                 ln = line.split()
                 if ln[2] == 'INDI':
                     if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),personDic): #if key already in person dictionary
+                        print('duplicate individual found, 1st one being taken')
                         duplicateCheck = 1
                         continue #go to next iteration and do not include
                     currentID = ln[1].replace("@", "") #this replaces the"@" that was seen in the ID's of the GEDCOM file
@@ -41,6 +42,7 @@ def genFamilyParser():
                     currentDic = personDic #we are now editing the individual dictionary
                 elif ln[2] == 'FAM':
                     if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),familyDic): #if key already in family dictionary
+                        print('duplicate family found, 1st one being taken')
                         duplicateCheck = 1
                         continue #go to next iteration and do not include
                     currentID = ln[1].replace("@", "")
@@ -152,6 +154,7 @@ def checkUniqueNameBirthday(personDic):
     names = []
     birthdays = []
     values = {}
+    checker = 0
     for key,value in sorted(personDic.items()):
         if value['Birthday'] not in birthdays and value['Name'] not in names:
             names.append(value['Name'])
@@ -161,6 +164,10 @@ def checkUniqueNameBirthday(personDic):
             names.append(value['Name'])
             birthdays.append(value['Birthday'])
             values[key] = value
+        else:
+            checker += 1
+    if checker > 1:
+        print('duplicate name and birthday found, first person being taken')
     return values
 
 def checkMalesNamesAreSame(personDic, familyDic):
@@ -170,7 +177,7 @@ def checkMalesNamesAreSame(personDic, familyDic):
         children = getChildren(family, personDic)
         for child in children:
             if child["Sex"] == "M" and getLastName(child) != fathersLastName:
-                raise ValueError('Male child does not have same last name as father.')
+                print('Male child does not have same last name as father.')
 
 def checkForPolygamy(familyDic, personDic):
     marriages = {}
@@ -196,7 +203,7 @@ def checkForPolygamy(familyDic, personDic):
              
     for key, count in marriages.items():
       if count > 1:
-        raise ValueError('Polygamy has occurred.')        
+        print('Polygamy has occurred. This includes either marriage happening before divorce, or marriage happening before a spouse death')        
 
 # better smell, instead of duplicating if code, made a function
 def checkIfKeyInDictionaryExists(line, dict):
@@ -227,10 +234,10 @@ def isPersonAlive(personID, personDic):
 def checkIfValidDate(testDate):
     currentDate = datetime.date.today()
     if currentDate < testDate:
-        raise ValueError('No date should be after current date')
+        print('Person found with birthday past todays date')
         
 def checkIfValidAge(age):
     if age > 150:
-        raise ValueError('Age of any individual cannot exceed 150 years')
+        print('Person detected with an age of over 150 years')
 
 genFamilyParser()
