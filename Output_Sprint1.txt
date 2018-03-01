@@ -16,12 +16,17 @@ US 23: duplicate names and birthday found, this being is being excluded
 Person being excluded: I15 Shane /Smith/ 
 
 US 16: Male child does not have same last name as father, check the table below.
-Male child is: Bill /Murphy/
+Male child is: Bill /Murphy/ 
 
 Wife ID in marriages twice without divorce or death
 Family ID is: F06
 Wife ID is: I14 Christina /Cameron/ 
-US11, US05, US06: Polygamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.
+US11: Polygamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.
+
+Family ID is: F06
+Wife ID is: I14 Christina /Cameron/ 
+US05: This wife has been married again before death
+US06: This wife has been married again before divorce
 
 Individuals
 +-----+----------------------+--------+------------+-----+-------+------------+-------+--------+
