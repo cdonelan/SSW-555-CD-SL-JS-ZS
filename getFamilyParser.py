@@ -90,6 +90,7 @@ def genFamilyParser():
     checkMalesNamesAreSame(personDic, familyDic)
     checkForPolygamy(familyDic, personDic)
     checkForMarriageBeforeDivorceOrDeath(familyDic, personDic)
+    print('US27: Indiviual Ages for each individual are reported in table below. See AGE column.')
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
