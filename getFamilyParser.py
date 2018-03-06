@@ -90,7 +90,7 @@ def genFamilyParser():
     checkMalesNamesAreSame(personDic, familyDic)
     checkForPolygamy(familyDic, personDic)
     checkForMarriageBeforeDivorceOrDeath(familyDic, personDic)
-    print('US27: Indiviual Ages for each individual are reported in table below. See AGE column.')
+    checkForAge(personDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -294,5 +294,18 @@ def checkIfValidAge(personID, dic, age):
     if age > 150:
         print('US07: Person detected with an age of over 150 years, as shown in table below.')
         print('Person is: ' + personID + ' ' + dic[personID]['Name'])
+
+
+def checkForAge(personDic):
+    counter = 0
+    for key,value in personDic.items():
+        if value['Age'] !=  "":
+            counter += 1
+        else:
+            print("US27: Not all ages were reported. Error for this individual: " + key + " " + value['Name'])
+
+    if counter == len(personDic):
+        print("US27: All individuals have an age reported as shown in the table below.")
+        
 
 genFamilyParser()
