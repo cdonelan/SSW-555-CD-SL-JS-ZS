@@ -3,10 +3,11 @@
 
 import os
 import datetime
+import unittest
 from prettytable import PrettyTable
 
 def genFamilyParser():
-    infile = open('My-Family-23-Jan-2018-602.ged', 'r')
+    infile = open('Jhustin1.ged', 'r')
 
     personDic = {}
     familyDic = {}
@@ -25,27 +26,27 @@ def genFamilyParser():
     currentID = ""
     currentDic = {}
     dateType = ''
-    i = 0
+    duplicateCheck = 0
     for line in infile:
         if line[0] == '0':
-            i = 0
+            duplicateCheck = 0
             if checkIfValidTagExc(line, firstLevelExceptions) is True:
                 ln = line.split()
                 if ln[2] == 'INDI':
-                    if ln[1].replace("@", "") in personDic.keys(): #if key already in person dictionary
-                        i = 1
+                    if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),personDic): #if key already in person dictionary
+                        duplicateCheck = 1
                         continue #go to next iteration and do not include
                     currentID = ln[1].replace("@", "") #this replaces the"@" that was seen in the ID's of the GEDCOM file
                     personDic[currentID] = {'Name': '', 'Sex': '', 'Birthday': '', 'Age': '', 'Death': 'N/A', 'Alive': 'True', 'Spouse': 'N/A', 'Child': 'N/A'} #initializes our dictionaries
                     currentDic = personDic #we are now editing the individual dictionary
                 elif ln[2] == 'FAM':
-                    if ln[1].replace("@", "") in familyDic.keys(): #if key already in family dictionary
-                        i = 1
+                    if checkIfKeyInDictionaryExists(ln[1].replace("@", ""),familyDic): #if key already in family dictionary
+                        duplicateCheck = 1
                         continue #go to next iteration and do not include
                     currentID = ln[1].replace("@", "")
                     familyDic[currentID] = {'Marriage': '', 'Husband ID': '', 'Husband Name': '', 'Wife ID': '', 'Wife Name': '','Children': [], 'Divorce': 'N/A'}  #initializes our dictionaries
                     currentDic = familyDic #we are now editing the family dictionary
-        elif line[0] == '1' and i != 1:
+        elif line[0] == '1' and duplicateCheck != 1:
             if checkIfValidTag(line, secondLevelTags) is True:
                ln = line.split()
                if ln[1] in importantDateDic.keys():
@@ -69,7 +70,7 @@ def genFamilyParser():
                        familyDic[currentID][tags[1]] = personDic[ln[2].replace("@", "")]['Name'] #put parents in the family dictionary
                    else:
                        familyDic[currentID]['Children'].append(ln[2].replace("@", "")) #put children in the family dictionary
-        elif line[0] == '2' and i != 1:
+        elif line[0] == '2' and duplicateCheck != 1:
             if checkIfValidTagMonth(line, thirdLevelTags, thirdLevelTagMonths) is True:
                  ln = line.split()
                  currentDic[currentID][dateType] = ln[4] + '-' + datesDic[ln[3]] + '-' + ln[2] #make date in the proper format as shown in the example on canvas
@@ -80,6 +81,8 @@ def genFamilyParser():
     peopleTable = PrettyTable(["ID", 'Name', 'Gender', 'Birthday', 'Age', 'Alive', 'Death', 'Child', 'Spouse'])
 
     personDic = checkUniqueNameBirthday(personDic)
+    checkMalesNamesAreSame(personDic, familyDic)
+    checkForPolygamy(familyDic, personDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -95,7 +98,79 @@ def genFamilyParser():
     print('Families')
     print(familyTable)
 
+    return personDic, familyDic
 
+def main():
+        marriage_before_death(individuals, families)
+        marriage_before_divorce(families)
+        
+#user story was to make sure that siblings could not marry each other
+'''def deathDate(personID, dic):
+    if dic[personID]['Alive'] == 'False':
+        death = list(dic[personID]['Death'].split('-'))
+        deathDate = datetime.date(int(death[0]), int(death[1]), int(death[2]))
+        return deathDate
+    
+def marriageDate(familyDic):
+    if "Marriage" in family:
+        marriage = list(['Marriage'].split('-'))
+        marriageDate = datetime.date(int(marriage[0]), int(marriage[1]), int(marriage[3]))
+        return marriageDate
+
+def divorceDate(familyDic):
+    if "Divorce" in family:
+        divorce = list(['Divorce'].split('-'))
+        divorceDate = datetime.date(int(divorce[0]), int(divorce[1]), int(divorce[3]))
+        return divorceDate
+    
+def marriage_before_divorce(familyDic):
+    Story_name = "US04"
+    error_msg = "Marriage should occur before divorce"
+    
+    for key,family in familyDic.items():
+           husbandID = family["Husband ID"]
+           wifeID = family["Wife ID"]
+           if "Divorced" in family:
+               if divorceDate <= marriageDate:
+                location = [husbandID, wifeID]
+                error = (Story_name, error_msg, location)
+                raise error'''
+
+def divorceBeforeDeath (familyDic, personDic):
+    divorces = {}
+    for key, family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if "Divorced" not in famimly:
+            continue
+        if not isPersonAlive(husbandID, personDic):
+            continue
+        if not isPersonAlive(wifeID, personDic):
+            continue
+
+        if wifeID in divorces:
+            print('Family ID is: ' + key)
+            print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+            if isPersonAlive(wifeID, personDic):
+                print("US06: This wife has been divorced before death")
+            divorces[wifeID] += 1
+        else:
+            marriages[wifeID] = 1
+
+        if husbandID in divorces:
+            print('Family ID is: ' + key)
+            print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID])
+            if isPersonAlive(husbandID, personDic):
+                print("US06: This husband has been divorced before death")
+            divorces[husbandID] += 1
+        else:
+            marriages[husbandID] = 1
+
+def isPersonAlive(personID, personDic):
+  if getPerson(personID, personDic)["Alive"] == "True":
+      return True
+  else:
+      return False
 
 def getIndividualAge(personID, dic):
     currentDate = datetime.date.today()
@@ -108,54 +183,34 @@ def getIndividualAge(personID, dic):
 
     if dic[personID]['Alive'] == 'True': 
         days = (currentDate - birthdayDate).days
-        years = days/365
+        years = days/365 
     else:
         days = (deathDate - birthdayDate).days
         years = days/365
-    return str(int(years))
-
-def checkIfValidTag(line, tags):
-      parts = line.split()
-      if parts[1] in tags:
-          return True
-      else:
-          return False
-
-def checkIfValidTagExc(line, tags):
-    parts = line.split()
-    if len(parts) == 3:
-        if parts[2] in tags:
-            return True
-        else:
-            return False
-
-def checkIfValidTagMonth(line, tags, tags1):
-    parts = line.split()
-    if len(parts) == 5:
-        if parts[1] in tags:
-            if parts[3] in tags1:
-                return True
-            else:
-                return False
-        else:
-            return False
-
-def checkUniqueNameBirthday(personDic):
-    names = []
-    birthdays = []
-    values = {}
-    for key,value in sorted(personDic.items()):
-        if value['Birthday'] not in birthdays and value['Name'] not in names:
-            names.append(value['Name'])
-            birthdays.append(value['Birthday'])
-            values[key] = value
-        if value['Name'] in names and value['Birthday'] not in birthdays:
-            names.append(value['Name'])
-            birthdays.append(value['Birthday'])
-            values[key] = value
-    return values
-    
-    
         
+    checkIfValidAge(personID, dic, int(years))
+    return years
 
+def marriageAfterFourteen(familyDic, personDic):
+    for key,family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if "Divorced" in family:
+            continue
+        if getIndividualAge(personDic[husbandID], dic)> 14:
+            continue
+        if getIndividualAge(personDic[wifeID], dic) > 14:
+            continue
+
+        print('Family ID is: ' + key)
+        print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+        print('Husband ID is:' + husbandID + ' ' + personDic[husbandID]['Name'])
+
+        if getIndividualAge(personDic[wifeID], dic) < 14:
+                print("US10: This wife has been married before 14")
+    
+        if getIndividualAge(personDic[husbandID], dic) < 14:
+                print("US10: This husband has been married before 14")
+           
 genFamilyParser()
+
