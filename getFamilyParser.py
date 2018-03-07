@@ -91,6 +91,7 @@ def genFamilyParser():
     checkForPolygamy(familyDic, personDic)
     checkForMarriageBeforeDivorceOrDeath(familyDic, personDic)
     checkForAge(personDic)
+    checkForCorrespondingEntries(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -305,7 +306,58 @@ def checkForAge(personDic):
             print("US27: Not all ages were reported. Error for this individual: " + key + " " + value['Name'])
 
     if counter == len(personDic):
-        print("US27: All individuals have an age reported as shown in the table below.")
+        print("US27: All individuals have an age reported as shown in the table below. Otherwise error would be reported.")
+
+def checkForCorrespondingEntries(personDic, familyDic):
+    childCountSuccess = 0
+    childCounter = 0
+    familyCounter = 0
+    familyCountSuccess = 0
+    for key,value in personDic.items():
+        if value['Child'] != 'N/A':
+            childCounter += 1
+            familyID = value['Child']
+            if key in familyDic[familyID]['Children']:
+                childCountSuccess += 1
+            else:
+                print("US26: Child not in family--> Child ID: " + key + " FamilyID: " + familyID)
+
+        if value['Spouse'] != 'N/A':
+            familyCounter += 1
+            familyID = value['Spouse']
+            if familyDic[familyID]['Husband ID'] == key or familyDic[familyID]['Wife ID'] == key:
+                familyCountSuccess += 1
+            else:
+                print("US26: Spouse not in family----> SpouseID: " + key + " FamilyID: " + familyID)
+
+    if childCountSuccess == childCounter:
+        print("US26: All children have a corresponding family entry.")
+    if familyCountSuccess == familyCounter:
+        print("US26: All spouses have a corresponding family entry.")
+        
+    husbandChecker = True
+    wifeChecker = True
+    indChecker =  True
+    for key,value in familyDic.items():
+        if value['Children'] != 'N/A':
+            for i in value['Children']:
+                if i not in personDic.keys():
+                    indChecker == False
+                    print("US26: Family child not in individual table--> Child ID: " + i + " FamilyID: " + key)
+        if value['Wife ID'] not in personDic.keys():
+            wifeChecker == False
+            print("US26: Wife not in indiviudal table-----> Wife ID: " + value['Wife ID'] + " FamilyID: " + key)
+        if value['Husband ID'] not in personDic.keys():
+            husbandChecker == False
+            print("US26: Wife not in indiviudal table-----> Husband ID: " + value['Husband ID'] + " FamilyID: " + key)
+
+    if husbandChecker == True:
+        print("US26: All husband family entries have a individual record entry.")
+    if wifeChecker == True:
+        print("US26: All wife family entries have a individual record entry.")
+    if indChecker == True:
+        print("US26: All children family entries have a individual record entry.")
+
         
 
 genFamilyParser()
