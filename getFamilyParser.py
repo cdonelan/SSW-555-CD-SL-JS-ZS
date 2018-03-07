@@ -375,15 +375,17 @@ def checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic):
                 birthdays[birthday] = 1
             else:
                 birthdays[birthday] = birthdays[birthday] + 1
-        if birthdays.items().count > 0:
+        if len(birthdays) > 0:
             for key, birthdaysCount in birthdays.items():
                 if birthdaysCount > 5:
                     print("US14: Family with ID: " + family["ID"] + " had more than 5 children at once.")
-        else:
-            print("US14: No more than five siblings are born at the same time")
+                else:
+                    print("US14: No more than five siblings are born at the same time")
 
 # US-17 Parents should not marry any of their descendants
 def checkParentsDontMarryDescendants(personDic, familyDic):
+    wifeCounter  = 0
+    husbandCounter = 0
     for key, family in familyDic.items():
         # Get descendants
         children = getChildren(family, personDic)
@@ -395,10 +397,16 @@ def checkParentsDontMarryDescendants(personDic, familyDic):
             if childsMarriage != None:
                 partnersID = getPartnersID(childID, childsMarriage)
                 if partnersID == husbandID:
+                    husbandCounter += 1
                     print("US17: Child with ID:" + childID + " married Dad with ID: " + husbandID)
                 if partnersID == wifeID:
+                    wifeCounter += 1
                     print("US17: Child with ID:" + childID + " married Mom with ID: " + wifeID)
-    print("US17: Parents did not marry any of their descendants")
+
+    if husbandCounter == 0:
+        print("US17: Husband did not marry any of their descendants")
+    if wifeCounter == 0:
+        print("US17: Wife did not marry any descendants")
                 
         
             
