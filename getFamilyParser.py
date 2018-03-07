@@ -9,6 +9,7 @@ from prettytable import PrettyTable
 def genFamilyParser():
     infile = open('My-Family-23-Jan-2018-602.ged', 'r')
 
+    print('Sprint 1:\n')
     personDic = {}
     familyDic = {}
 
@@ -90,10 +91,13 @@ def genFamilyParser():
     checkMalesNamesAreSame(personDic, familyDic)
     checkForPolygamy(familyDic, personDic)
     checkForMarriageBeforeDivorceOrDeath(familyDic, personDic)
+    print('\nSprint 2:\n')
     checkForAge(personDic)
     checkForCorrespondingEntries(personDic, familyDic)
     checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic)
     checkParentsDontMarryDescendants(personDic, familyDic)
+    marriageAfter14(personDic, familyDic)
+    divorceBeforeDeath(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -420,5 +424,50 @@ def getPartnersID(personID, family):
     if family["Husband ID"] == personID:
         return family["Wife ID"]
     return family["Husband ID"]
+
+def marriageAfter14(personDic, familyDic):
+    counter = 0
+    for key, family in familyDic.items():
+        husbandID = family['Husband ID']
+        wifeID = family['Wife ID']
+    if personDic[husbandID]['Age'] <= 14:
+        counter += 1
+        print("US10: Marriage occured before 14 for this husband: " + husbandID + " FamilyID: " + key)
+    if personDic[wifeID]['Age'] <= 14:
+        counter += 1
+        print("US10: Marriage occured before 14 for this wife: " + wifeID + " FamilyID: " + key)
+
+    if counter == 0:
+        print("US10: All marriages occured after 14 years of age.")
+
+def divorceBeforeDeath(personDic, familyDic):
+    counter = 0
+    for key, family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if (family['Divorce'] != 'N/A' and personDic[husbandID]['Death'] != 'N/A') or (family['Divorce'] != 'N/A' and personDic[wifeID]['Death'] != 'N/A'):
+            divorce = list(family['Divorce'].split('-'))
+            divorceDate = datetime.date(int(divorce[0]), int(divorce[1]), int(divorce[2]))
+            divDays = 0
+            currentDate = datetime.date.today()
+            divDays = (currentDate - divorceDate).days
+            divorceYears = divDays/365
+            wifeDeathYears = 0
+            husbandDeathYears = 0
+            if personDic[husbandID]['Death'] != 'N/A':
+                husbandDeathYears = int(getIndividualAge(husbandID, personDic))
+            if personDic[wifeID]['Death'] != 'N/A':
+                wifeDeathYears = int(getIndividualAge(wifeID, personDic))
+            if husbandDeathYears > divorceYears:
+                counter += 1
+                print("US06: Divorce occured before death of husband: " + key + " Spouse ID: " + family['Husband ID']) 
+            if wifeDeathYears > divorceYears:
+                counter += 1
+                print("US06: Divorce occured before death of wife: " + key + " Spouse ID: " + family['Wife ID'])
+
+    if counter == 0:
+        print("US06: All divorces occured before death.")
+                                                                                                        
+        
 
 genFamilyParser()
