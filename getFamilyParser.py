@@ -96,7 +96,7 @@ def genFamilyParser():
     checkForCorrespondingEntries(personDic, familyDic)
     checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic)
     checkParentsDontMarryDescendants(personDic, familyDic)
-    marriageAfter14(personDic, familyDic)
+    marriageAfterFourteen(personDic, familyDic)
     divorceBeforeDeath(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
@@ -425,48 +425,39 @@ def getPartnersID(personID, family):
         return family["Wife ID"]
     return family["Husband ID"]
 
-def marriageAfter14(personDic, familyDic):
-    counter = 0
-    for key, family in familyDic.items():
-        husbandID = family['Husband ID']
-        wifeID = family['Wife ID']
-    if personDic[husbandID]['Age'] <= 14:
-        counter += 1
-        print("US10: Marriage occured before 14 for this husband: " + husbandID + " FamilyID: " + key)
-    if personDic[wifeID]['Age'] <= 14:
-        counter += 1
-        print("US10: Marriage occured before 14 for this wife: " + wifeID + " FamilyID: " + key)
-
-    if counter == 0:
-        print("US10: All marriages occured after 14 years of age.")
-
+# US-06 Divorce can only occur before death of both spouses
 def divorceBeforeDeath(personDic, familyDic):
-    counter = 0
-    for key, family in familyDic.items():
+    for key,family in familyDic.items():
         husbandID = family["Husband ID"]
         wifeID = family["Wife ID"]
-        if (family['Divorce'] != 'N/A' and personDic[husbandID]['Death'] != 'N/A') or (family['Divorce'] != 'N/A' and personDic[wifeID]['Death'] != 'N/A'):
-            divorce = list(family['Divorce'].split('-'))
-            divorceDate = datetime.date(int(divorce[0]), int(divorce[1]), int(divorce[2]))
-            divDays = 0
-            currentDate = datetime.date.today()
-            divDays = (currentDate - divorceDate).days
-            divorceYears = divDays/365
-            wifeDeathYears = 0
-            husbandDeathYears = 0
-            if personDic[husbandID]['Death'] != 'N/A':
-                husbandDeathYears = int(getIndividualAge(husbandID, personDic))
-            if personDic[wifeID]['Death'] != 'N/A':
-                wifeDeathYears = int(getIndividualAge(wifeID, personDic))
-            if husbandDeathYears > divorceYears:
-                counter += 1
-                print("US06: Divorce occured before death of husband: " + key + " Spouse ID: " + family['Husband ID']) 
-            if wifeDeathYears > divorceYears:
-                counter += 1
-                print("US06: Divorce occured before death of wife: " + key + " Spouse ID: " + family['Wife ID'])
+        if "Married" not in family:
+            if not isPersonAlive(wifeID, personDic):
+                print('Family ID is: ' + key)
+                print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+                print("US06: This wife has been divorced before death")
 
-    if counter == 0:
-        print("US06: All divorces occured before death.")
+            if not isPersonAlive(husbandID, personDic):
+                print('Family ID is: ' + key)
+                print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID]['Name'])
+                print("US06: This husband has been divorced before death")
+    
+# US-10 Parents must be at least 14 years old            
+def marriageAfterFourteen(personDic, familyDic):
+    for key,family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if "Divorced" in family:
+            continue
+
+        if int(getIndividualAge(wifeID, personDic)) <= 14:
+            print('Family ID is: ' + key)
+            print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+            print("US10: This wife has been married before 14")
+                
+        elif int(getIndividualAge(husbandID, personDic)) <= 14:
+            print('Family ID is: ' + key)
+            print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID]['Name'])
+            print("US10: This husband has been married before 14")
                                                                                                         
         
 
