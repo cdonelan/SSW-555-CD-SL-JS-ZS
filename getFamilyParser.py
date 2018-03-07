@@ -93,6 +93,7 @@ def genFamilyParser():
     checkForAge(personDic)
     checkForCorrespondingEntries(personDic, familyDic)
     checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic)
+    checkParentsDontMarryDescendants(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -268,7 +269,9 @@ def checkIfKeyInDictionaryExists(line, dict):
         return False
 
 def getPerson(id, personDic):
-    return personDic[id]
+    person = personDic[id]
+    person["ID"] = id
+    return person
 
 def getLastName(person):
     return person.get("Name").split('/')[1]
@@ -379,5 +382,35 @@ def checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic):
         else:
             print("US14: No more than five siblings are born at the same time")
 
+# US-17 Parents should not marry any of their descendants
+def checkParentsDontMarryDescendants(personDic, familyDic):
+    for key, family in familyDic.items():
+        # Get descendants
+        children = getChildren(family, personDic)
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        for child in children:
+            childID = child["ID"]
+            childsMarriage = getMarriage(child["ID"], familyDic)
+            if childsMarriage != None:
+                partnersID = getPartnersID(childID, childsMarriage)
+                if partnersID == husbandID:
+                    print("US17: Child with ID:" + childID + " married Dad with ID: " + husbandID)
+                if partnersID == wifeID:
+                    print("US17: Child with ID:" + childID + " married Mom with ID: " + wifeID)
+    print("US17: Parents did not marry any of their descendants")
+                
+        
+            
+def getMarriage(personID, familyDic):
+    for key, family, in familyDic.items():
+            if family["Husband ID"] == personID or family["Wife ID"] == personID:
+                return family
+    return None
+
+def getPartnersID(personID, family):
+    if family["Husband ID"] == personID:
+        return family["Wife ID"]
+    return family["Husband ID"]
 
 genFamilyParser()
