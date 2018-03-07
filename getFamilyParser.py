@@ -92,6 +92,7 @@ def genFamilyParser():
     checkForMarriageBeforeDivorceOrDeath(familyDic, personDic)
     checkForAge(personDic)
     checkForCorrespondingEntries(personDic, familyDic)
+    checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -358,6 +359,25 @@ def checkForCorrespondingEntries(personDic, familyDic):
     if indChecker == True:
         print("US26: All children family entries have a individual record entry.")
 
-        
+# US-14 No more than five siblings should be born at the same time
+def checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic):
+    for key, family in familyDic.items():
+        children = getChildren(family, personDic)
+        if children.count < 5:
+            continue
+        birthdays = {}
+        for child in children:
+            birthday = child["Birthday"]
+            if birthday not in birthdays.keys():
+                birthdays[birthday] = 1
+            else:
+                birthdays[birthday] = birthdays[birthday] + 1
+        if birthdays.items().count > 0:
+            for key, birthdaysCount in birthdays.items():
+                if birthdaysCount > 5:
+                    print("US14: Family with ID: " + family["ID"] + " had more than 5 children at once.")
+        else:
+            print("US14: No more than five siblings are born at the same time")
+
 
 genFamilyParser()
