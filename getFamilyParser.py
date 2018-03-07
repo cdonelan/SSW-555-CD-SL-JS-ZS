@@ -96,7 +96,7 @@ def genFamilyParser():
     checkForCorrespondingEntries(personDic, familyDic)
     checkNoMoreThanFiveSiblingsBornAtSameTime(personDic, familyDic)
     checkParentsDontMarryDescendants(personDic, familyDic)
-    marriageAfter14(personDic, familyDic)
+    marriageAfterFourteen(personDic, familyDic)
     divorceBeforeDeath(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
@@ -425,48 +425,50 @@ def getPartnersID(personID, family):
         return family["Wife ID"]
     return family["Husband ID"]
 
-def marriageAfter14(personDic, familyDic):
-    counter = 0
-    for key, family in familyDic.items():
-        husbandID = family['Husband ID']
-        wifeID = family['Wife ID']
-    if personDic[husbandID]['Age'] <= 14:
-        counter += 1
-        print("US10: Marriage occured before 14 for this husband: " + husbandID + " FamilyID: " + key)
-    if personDic[wifeID]['Age'] <= 14:
-        counter += 1
-        print("US10: Marriage occured before 14 for this wife: " + wifeID + " FamilyID: " + key)
-
-    if counter == 0:
-        print("US10: All marriages occured after 14 years of age.")
-
-def divorceBeforeDeath(personDic, familyDic):
-    counter = 0
+def divorceBeforeDeath (familyDic, personDic):
+    divorces = {}
     for key, family in familyDic.items():
         husbandID = family["Husband ID"]
         wifeID = family["Wife ID"]
-        if (family['Divorce'] != 'N/A' and personDic[husbandID]['Death'] != 'N/A') or (family['Divorce'] != 'N/A' and personDic[wifeID]['Death'] != 'N/A'):
-            divorce = list(family['Divorce'].split('-'))
-            divorceDate = datetime.date(int(divorce[0]), int(divorce[1]), int(divorce[2]))
-            divDays = 0
-            currentDate = datetime.date.today()
-            divDays = (currentDate - divorceDate).days
-            divorceYears = divDays/365
-            wifeDeathYears = 0
-            husbandDeathYears = 0
-            if personDic[husbandID]['Death'] != 'N/A':
-                husbandDeathYears = int(getIndividualAge(husbandID, personDic))
-            if personDic[wifeID]['Death'] != 'N/A':
-                wifeDeathYears = int(getIndividualAge(wifeID, personDic))
-            if husbandDeathYears > divorceYears:
-                counter += 1
-                print("US06: Divorce occured before death of husband: " + key + " Spouse ID: " + family['Husband ID']) 
-            if wifeDeathYears > divorceYears:
-                counter += 1
-                print("US06: Divorce occured before death of wife: " + key + " Spouse ID: " + family['Wife ID'])
+        if "Divorced" not in famimly:
+            continue
+        if not isPersonAlive(husbandID, personDic):
+            continue
+        if not isPersonAlive(wifeID, personDic):
+            continue
 
-    if counter == 0:
-        print("US06: All divorces occured before death.")
+        if wifeID in divorces:
+            print('Family ID is: ' + key)
+            print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+            if isPersonAlive(wifeID, personDic):
+                print("US06: This wife has been divorced before death")
+
+        if husbandID in divorces:
+            print('Family ID is: ' + key)
+            print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID])
+            if isPersonAlive(husbandID, personDic):
+                print("US06: This husband has been divorced before death")
+
+def marriageAfterFourteen(familyDic, personDic):
+    for key,family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if "Divorced" in family:
+            continue
+        if getIndividualAge(personDic[husbandID], dic)> 14:
+            continue
+        if getIndividualAge(personDic[wifeID], dic) > 14:
+            continue
+
+        print('Family ID is: ' + key)
+        print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+        print('Husband ID is:' + husbandID + ' ' + personDic[husbandID]['Name'])
+
+        if int(getIndividualAge(personDic[wifeID], dic)) < 14:
+                print("US10: This wife has been married before 14")
+    
+        if int(getIndividualAge(personDic[husbandID], dic)) < 14:
+                print("US10: This husband has been married before 14")
                                                                                                         
         
 
