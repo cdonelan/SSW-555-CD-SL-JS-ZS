@@ -427,20 +427,34 @@ def getPartnersID(personID, family):
 
 # US-06 Divorce can only occur before death of both spouses
 def divorceBeforeDeath(personDic, familyDic):
-    for key,family in familyDic.items():
+    counter = 0
+    for key, family in familyDic.items():
         husbandID = family["Husband ID"]
         wifeID = family["Wife ID"]
-        if "Married" not in family:
-            if not isPersonAlive(wifeID, personDic):
-                print('Family ID is: ' + key)
-                print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
-                print("US06: This wife has been divorced before death")
+        if (family['Divorce'] != 'N/A' and personDic[husbandID]['Death'] != 'N/A') or (family['Divorce'] != 'N/A' and personDic[wifeID]['Death'] != 'N/A'):
+            divorce = list(family['Divorce'].split('-'))
+            divorceDate = datetime.date(int(divorce[0]), int(divorce[1]), int(divorce[2]))
+            divDays = 0
+            currentDate = datetime.date.today()
+            divDays = (currentDate - divorceDate).days
+            divorceYears = divDays/365
+            wifeDeathYears = 0
+            husbandDeathYears = 0
+            if personDic[husbandID]['Death'] != 'N/A':
+                husbandDeathYears = int(getIndividualAge(husbandID, personDic))
+            if personDic[wifeID]['Death'] != 'N/A':
+                wifeDeathYears = int(getIndividualAge(wifeID, personDic))
+            if husbandDeathYears > divorceYears:
+                counter += 1
+                print("US06: Divorce occured before death of husband: " + key + " Spouse ID: " + family['Husband ID']) 
+            if wifeDeathYears > divorceYears:
+                counter += 1
+                print("US06: Divorce occured before death of wife: " + key + " Spouse ID: " + family['Wife ID'])
 
-            if not isPersonAlive(husbandID, personDic):
-                print('Family ID is: ' + key)
-                print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID]['Name'])
-                print("US06: This husband has been divorced before death")
-    
+    if counter == 0:
+        print("US06: All divorces occured before death.")
+
+
 # US-10 Parents must be at least 14 years old            
 def marriageAfterFourteen(personDic, familyDic):
     for key,family in familyDic.items():
