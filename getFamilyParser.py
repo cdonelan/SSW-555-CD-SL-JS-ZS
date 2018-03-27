@@ -101,7 +101,8 @@ def genFamilyParser():
     print('\nSprint3:\n')
     listLivingMarried(personDic, familyDic)
     listLivingSingle(personDic)
-    
+    checkCorrectGender(personDic, familyDic)
+    checkAuntsAndUncles(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -404,10 +405,10 @@ def checkParentsDontMarryDescendants(personDic, familyDic):
             childsMarriage = getMarriage(child["ID"], familyDic)
             if childsMarriage != None:
                 partnersID = getPartnersID(childID, childsMarriage)
-                if partnersID == husbandID:
+                if husbandID in partnersID:
                     husbandCounter += 1
                     print("US17: Child with ID:" + childID + " married Dad with ID: " + husbandID)
-                if partnersID == wifeID:
+                if wifeID in partnersID:
                     wifeCounter += 1
                     print("US17: Child with ID:" + childID + " married Mom with ID: " + wifeID)
 
@@ -424,10 +425,14 @@ def getMarriage(personID, familyDic):
                 return family
     return None
 
-def getPartnersID(personID, family):
-    if family["Husband ID"] == personID:
-        return family["Wife ID"]
-    return family["Husband ID"]
+def getPartnersID(personID, familyDic):
+    partners = []
+    for family in familyDic.values():
+        if family["Husband ID"] == personID:
+            partners.append(family["Wife ID"])
+        elif family["Wife ID"] == personID:
+            partners.append(family["Husband ID"])
+    return partners
 
 # US-06 Divorce can only occur before death of both spouses
 def divorceBeforeDeath(personDic, familyDic):
@@ -497,6 +502,54 @@ def listLivingSingle(personDic):
         if person["Spouse"] == 'N/A' and int(person["Age"]) > 30 and person["Alive"] == "True":
                 print("Person ID: " + key + " Person Name: " + person["Name"] + " Person Age: " + person["Age"])
 
+def getAuntAndUncle (person, personDic, familyDic):
+    AuntsUncles = []
+    for key, family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        if person["ID"] in family.get("Children"):
+            for parentID in [husbandID, wifeID]:
+                for key, parentFamily in familyDic.items():
+                    if parentID in parentFamily.get("Children"):
+                        for child in getChildren(parentFamily, personDic):
+                            if child["ID"] != parentID:
+                                AuntsUncles.append(child["ID"])
+    return AuntsUncles
+                
             
+# US-20 Aunts and uncles should not marry their nieces or nephews
+def checkAuntsAndUncles(personDic, familyDic):
+    for key, family in familyDic.items():
+        # Get descendants
+        children = getChildren(family, personDic)
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+        for child in children:
+            childID = child["ID"]
+            childsMarriage = getMarriage(child["ID"], familyDic)
+            if childsMarriage != None:
+                partnersID = getPartnersID(childID, familyDic)
+                for partnerID in partnersID:
+                    if partnerID in getAuntAndUncle(child, personDic, familyDic):
+                        print ("US20: " + childID + " cannot marry " + partnerID + "because aunts and uncles cannot marry nieces and nephews")
+            
+# US-21 Husband in family should be male and wife in family should be female
+def checkCorrectGender(personDic, familyDic):
+    for key,family in familyDic.items():
+        husbandID = family["Husband ID"]
+        wifeID = family["Wife ID"]
+
+        father = getPerson(family["Husband ID"], personDic)
+        wife = getPerson(family["Wife ID"], personDic)
+
+        if father["Sex"] == "F":
+            print('Family ID is: ' + key)
+            print ('Husband ID is: ' + husbandID + ' ' + personDic[husbandID]['Name'])
+            print('US 21: Gender role of ' + husbandID + ' does not match')
+            
+        elif wife["Sex"] == "M":
+            print('Family ID is: ' + key)
+            print ('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+            print('US 21: Gender role of ' + wifeID + ' does not match')            
         
 genFamilyParser()
