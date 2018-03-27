@@ -100,6 +100,7 @@ def genFamilyParser():
     divorceBeforeDeath(personDic, familyDic)
     print('\nSprint3:\n')
     listLivingMarried(personDic, familyDic)
+    listLivingSingle(personDic)
     
 
     for key,val in sorted(personDic.items()):
@@ -479,7 +480,7 @@ def marriageAfterFourteen(personDic, familyDic):
 
 # US-30 List living married
 def listLivingMarried(personDic, familyDic):
-    print("People who are married and living are listed below:\n")
+    print("US-30: People who are married and living are listed below:\n")
     for key,family in familyDic.items():
         if family["Divorce"] == 'N/A':
             husbandID = family["Husband ID"]
@@ -488,6 +489,13 @@ def listLivingMarried(personDic, familyDic):
                 print("Person ID: " + husbandID + " Person Name: " + personDic[husbandID]["Name"])
             if personDic[wifeID]["Alive"] == "True":
                 print("Person ID: " + wifeID + " Person Name: " + personDic[wifeID]["Name"])
+
+# US-31 List living single above 30
+def listLivingSingle(personDic):
+    print("\nUS31: People who are single, living, and above 30 are listed below:\n")
+    for key,person in personDic.items():
+        if person["Spouse"] == 'N/A' and int(person["Age"]) > 30 and person["Alive"] == "True":
+                print("Person ID: " + key + " Person Name: " + person["Name"] + " Person Age: " + person["Age"])
 
             
         
