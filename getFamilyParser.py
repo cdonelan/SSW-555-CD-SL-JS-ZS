@@ -98,11 +98,14 @@ def genFamilyParser():
     checkParentsDontMarryDescendants(personDic, familyDic)
     marriageAfterFourteen(personDic, familyDic)
     divorceBeforeDeath(personDic, familyDic)
+    print('\nSprint3:\n')
+    listLivingMarried(personDic, familyDic)
+    
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
         peopleTable.add_row(row)
-    print('Individuals')
+    print('\nIndividuals')
     print(peopleTable)
 
     familyTable = PrettyTable(["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children"])
@@ -473,6 +476,19 @@ def marriageAfterFourteen(personDic, familyDic):
             print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID]['Name'])
             print("US10: This husband has been married before 14")
                                                                                                         
-        
 
+# US-30 List living married
+def listLivingMarried(personDic, familyDic):
+    print("People who are married and living are listed below:\n")
+    for key,family in familyDic.items():
+        if family["Divorce"] == 'N/A':
+            husbandID = family["Husband ID"]
+            wifeID = family["Wife ID"]
+            if personDic[husbandID]["Alive"] == "True":
+                print("Person ID: " + husbandID + " Person Name: " + personDic[husbandID]["Name"])
+            if personDic[wifeID]["Alive"] == "True":
+                print("Person ID: " + wifeID + " Person Name: " + personDic[wifeID]["Name"])
+
+            
+        
 genFamilyParser()
