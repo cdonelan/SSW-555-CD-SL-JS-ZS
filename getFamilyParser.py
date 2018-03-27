@@ -543,12 +543,12 @@ def checkCorrectGender(personDic, familyDic):
         wife = getPerson(family["Wife ID"], personDic)
 
         if father["Sex"] == "F":
-            print('Family ID is: ' + key)
+            print('\nFamily ID is: ' + key)
             print ('Husband ID is: ' + husbandID + ' ' + personDic[husbandID]['Name'])
             print('US 21: Gender role of ' + husbandID + ' does not match')
             
         elif wife["Sex"] == "M":
-            print('Family ID is: ' + key)
+            print('\nFamily ID is: ' + key)
             print ('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
             print('US 21: Gender role of ' + wifeID + ' does not match')            
         
