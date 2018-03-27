@@ -427,10 +427,10 @@ def getMarriage(personID, familyDic):
 
 def getPartnersID(personID, familyDic):
     partners = []
-    for family in familyDic.values():
-        if family["Husband ID"] == personID:
+    for key, family in familyDic.items():
+        if key == personID:
             partners.append(family["Wife ID"])
-        elif family["Wife ID"] == personID:
+        elif key == personID:
             partners.append(family["Husband ID"])
     return partners
 
