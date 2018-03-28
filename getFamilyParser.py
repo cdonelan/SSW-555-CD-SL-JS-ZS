@@ -103,6 +103,7 @@ def genFamilyParser():
     listLivingSingle(personDic)
     checkCorrectGender(personDic, familyDic)
     checkAuntsAndUncles(personDic, familyDic)
+    checkParentsNotTooOld(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -548,4 +549,19 @@ def checkCorrectGender(personDic, familyDic):
             print ('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
             print('US 21: Gender role of ' + wifeID + ' does not match')            
         
+
+# US-12 Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
+def checkParentsNotTooOld(personDic, familyDic):
+    for key, family in familyDic.items():
+        fatherAge = int(getPerson(family["Husband ID"], personDic)["Age"])
+        wifeAge = int(getPerson(family["Wife ID"], personDic)["Age"])
+        children = getChildren(family, personDic)
+        for child in children:
+            childsAge = int(child["Age"])
+            if (wifeAge - childsAge) >= 60 or (fatherAge - childsAge) >= 80:
+                print("There is a problem with the child" + child + " because his/her parents are too old") 
+
+
+
+
 genFamilyParser()
