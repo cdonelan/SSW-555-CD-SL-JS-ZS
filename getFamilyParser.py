@@ -425,14 +425,11 @@ def getMarriage(personID, familyDic):
                 return family
     return None
 
-def getPartnersID(personID, familyDic):
-    partners = []
-    for key, family in familyDic.items():
-        if key == personID:
-            partners.append(family["Wife ID"])
-        elif key == personID:
-            partners.append(family["Husband ID"])
-    return partners
+def getPartnersID(personID, family):
+    if family["Husband ID"] == personID:
+        return family["Wife ID"]
+    return family["Husband ID"]
+
 
 # US-06 Divorce can only occur before death of both spouses
 def divorceBeforeDeath(personDic, familyDic):
@@ -528,10 +525,9 @@ def checkAuntsAndUncles(personDic, familyDic):
             childID = child["ID"]
             childsMarriage = getMarriage(child["ID"], familyDic)
             if childsMarriage != None:
-                partnersID = getPartnersID(childID, familyDic)
-                for partnerID in partnersID:
-                    if partnerID in getAuntAndUncle(child, personDic, familyDic):
-                        print ("US20: " + childID + " cannot marry " + partnerID + "because aunts and uncles cannot marry nieces and nephews")
+                partnersID = getPartnersID(childID, childsMarriage)
+                if partnersID in getAuntAndUncle(child, personDic, familyDic):
+                    print ("\nUS20: " + childID + " cannot marry " + partnersID + "because aunts and uncles cannot marry nieces and nephews")
             
 # US-21 Husband in family should be male and wife in family should be female
 def checkCorrectGender(personDic, familyDic):
