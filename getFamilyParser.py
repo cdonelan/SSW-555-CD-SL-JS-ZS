@@ -107,6 +107,9 @@ def genFamilyParser():
     checkAuntsAndUncles(personDic, familyDic)
     checkParentsNotTooOld(personDic, familyDic)
     checkSiblingSpacing(personDic, familyDic)
+    print('\nSprint4:\n')
+    us08(personDic, familyDic)
+    us09(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -585,6 +588,37 @@ def checkSiblingSpacing(personDic, familyDic):
                         print(childrensBirthdays[j])
 
 
+# US-08 Children should be born after marriage of parents (and not more than 9 months after their divorce)
+def us08(personDic, familyDic):
+     for key, family in familyDic.items():
+        marriageDate = parse(family["Marriage"])
+        
+        children = getChildren(family, personDic)
+        for child in children:
+            childsBirthday = parse(child["Birthday"])
+            deltaDate = childsBirthday - marriageDate
+            deltaDays = abs(deltaDate.days)
+            deltaMonths = deltaDays / 30.
+            if deltaMonths < 9:
+                print("US-8 Child was born less than 9 months after marriage.")
+                print(child)
+            if family["Divorce"] != "N/A":
+                divorceDate = parse(family["Divorce"])
+                deltaDate = childsBirthday - divorceDate
+                deltaDays = abs(deltaDate.days)
+                deltaMonths = deltaDays / 30.
+                if deltaMonths > 9:
+                    print("US-8 Child was more than 9 months after divorce.")
+                    print(child)
+            
+            
+
+
+# US-09 Child should be born before death of mother and before 9 months after death of father
+def us09(personDic, familyDic):
+    print('US09 not implemented')
 
 
 genFamilyParser()
+
+
