@@ -110,6 +110,7 @@ def genFamilyParser():
     print('\nSprint4:\n')
     us08(personDic, familyDic)
     us09(personDic, familyDic)
+    listUpcomingBirthdays(personDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -640,6 +641,26 @@ def us09(personDic, familyDic):
                 if deltaDays > 0:
                     print("US-9 - Child was born after death of mother")
                     print(child)
+
+#US-38 List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+def listUpcomingBirthdays(dic):
+    print("US-38: Printing all people who have birthdays in the next 30 days")
+    count = 0
+    for key, value in dic.items():
+        currentDate = datetime.date.today()
+        birthday = list(dic[key]['Birthday'].split('-'))
+        year = datetime.date.today().year
+        birthdayDate = datetime.date(year, int(birthday[1]), int(birthday[2]))
+        
+        if dic[key]['Alive'] == 'True': 
+            days = (birthdayDate - currentDate).days
+            if days <= 30 and days > 0:
+                count += 1
+                print(dic[key]['Name'])
+                print(key)
+
+    if count == 0:
+     print("No one has birthdays in the next 30 days") 
 
 genFamilyParser()
 
