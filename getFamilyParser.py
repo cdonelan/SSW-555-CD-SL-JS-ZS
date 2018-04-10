@@ -225,7 +225,7 @@ def checkForPolygamy(familyDic, personDic):
         if wifeID in marriages:
             print('Wife ID in marriages twice without divorce or death')
             print('Family ID is: ' + key)
-            print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+            print("Wife ID is: " + family["Wife ID"] + " " + personDic[wifeID]['Name'])
             marriages[wifeID] += 1
         else:
             marriages[wifeID] = 1
@@ -233,14 +233,14 @@ def checkForPolygamy(familyDic, personDic):
         if husbandID in marriages:
             print('Husband ID in marriages twice without divorce or death')
             print('Family ID is: ' + key)
-            print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID])
+            print("Husband ID is: " + family["Husband ID"] + " " + personDic[husbandID]['Name'])
             marriages[husbandID] += 1
         else:
             marriages[husbandID] = 1
              
     for key, count in marriages.items():
       if count > 1:
-        print('US11: Polygamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.')
+        print('US11: Bigamy has occurred for person mentioned above. This includes either marriage happening before divorce, or marriage happening before a spouse death. Check the family table.')
 
 
 
@@ -258,22 +258,22 @@ def checkForMarriageBeforeDivorceOrDeath(familyDic, personDic):
         
         if wifeID in marriages:
             print('Family ID is: ' + key)
-            print('Wife ID is: ' + wifeID + ' ' + personDic[wifeID]['Name'])
+            print("Wife ID is: " + family["Wife ID"] + " " + personDic[wifeID]["Name"])
             if isPersonAlive(wifeID, personDic):
                 print("US05: This wife has been married again before death")
             if "Divorced" not in family:
-                print("US06: This wife has been married again before divorce")
+                print("US04: This wife has been married again before divorce")
             marriages[wifeID] += 1
         else:
             marriages[wifeID] = 1
 
         if husbandID in marriages:
             print('Family ID is: ' + key)
-            print('Husband ID is: ' + husbandID + ' ' + personDic[husbandID])
+            print("Husband ID is: " + family["Husband ID"] + " " + personDic[husbandID]["Name"])
             if isPersonAlive(husbandID, personDic):
                 print("US05: This husband has been married again before death")
             if "Divorced" not in family:
-                print("US06: This husband has been married again before divorce")
+                print("US04: This husband has been married again before divorce")
             marriages[husbandID] += 1
         else:
             marriages[husbandID] = 1
