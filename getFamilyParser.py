@@ -597,7 +597,7 @@ def us08(personDic, familyDic):
         for child in children:
             childsBirthday = parse(child["Birthday"])
             deltaDate = childsBirthday - marriageDate
-            deltaDays = abs(deltaDate.days)
+            deltaDays = deltaDate.days
             deltaMonths = deltaDays / 30.
             if deltaMonths < 9:
                 print("US-8 Child was born less than 9 months after marriage.")
@@ -605,7 +605,7 @@ def us08(personDic, familyDic):
             if family["Divorce"] != "N/A":
                 divorceDate = parse(family["Divorce"])
                 deltaDate = childsBirthday - divorceDate
-                deltaDays = abs(deltaDate.days)
+                deltaDays = deltaDate.days
                 deltaMonths = deltaDays / 30.
                 if deltaMonths > 9:
                     print("US-8 Child was more than 9 months after divorce.")
