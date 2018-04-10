@@ -636,8 +636,8 @@ def us09(personDic, familyDic):
                     print(child)
     
             if mothersDeath != "N/A":
-                mothersDeath = parse(mothersDeath)
-                deltaDate = childsBirthday - mothersDeath
+                mothersDeathParsed = parse(mothersDeath)
+                deltaDate = childsBirthday - mothersDeathParsed
                 deltaDays = deltaDate.days
                 if deltaDays > 0:
                     print("US-9 - Child was born after death of mother")
