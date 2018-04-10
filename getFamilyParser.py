@@ -597,7 +597,7 @@ def us08(personDic, familyDic):
         for child in children:
             childsBirthday = parse(child["Birthday"])
             deltaDate = childsBirthday - marriageDate
-            deltaDays = abs(deltaDate.days)
+            deltaDays = deltaDate.days
             deltaMonths = deltaDays / 30.
             if deltaMonths < 9:
                 print("US-8 Child was born less than 9 months after marriage.")
@@ -605,7 +605,7 @@ def us08(personDic, familyDic):
             if family["Divorce"] != "N/A":
                 divorceDate = parse(family["Divorce"])
                 deltaDate = childsBirthday - divorceDate
-                deltaDays = abs(deltaDate.days)
+                deltaDays = deltaDate.days
                 deltaMonths = deltaDays / 30.
                 if deltaMonths > 9:
                     print("US-8 Child was more than 9 months after divorce.")
@@ -616,8 +616,30 @@ def us08(personDic, familyDic):
 
 # US-09 Child should be born before death of mother and before 9 months after death of father
 def us09(personDic, familyDic):
-    print('US09 not implemented')
+     for key, family in familyDic.items():
+        fathersDeath = getPerson(family["Husband ID"], personDic)["Death"]
+        mothersDeath = getPerson(family["Wife ID"], personDic)["Death"]
 
+        children = getChildren(family, personDic)
+        for child in children:
+            childsBirthday = parse(child["Birthday"])
+
+            if fathersDeath != "N/A":
+                fathersDeathDate = parse(fathersDeath)
+                deltaDate = childsBirthday - fathersDeathDate
+                deltaDays = deltaDate.days
+                deltaMonths = deltaDays / 30.
+                if deltaMonths > 9:
+                    print("US-9 - Child was born more than 9 months after death of father")
+                    print(child)
+    
+            if mothersDeath != "N/A":
+                mothersDeath = parse(mothersDeath)
+                deltaDate = childsBirthday - mothersDeath
+                deltaDays = deltaDate.days
+                if deltaDays > 0:
+                    print("US-9 - Child was born after death of mother")
+                    print(child)
 
 genFamilyParser()
 
