@@ -111,6 +111,7 @@ def genFamilyParser():
     us08(personDic, familyDic)
     us09(personDic, familyDic)
     listUpcomingBirthdays(personDic)
+    listUpcomingAnniversaries(familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -656,11 +657,29 @@ def listUpcomingBirthdays(dic):
             days = (birthdayDate - currentDate).days
             if days <= 30 and days > 0:
                 count += 1
-                print(dic[key]['Name'])
-                print(key)
+                print("Person ID: " + key + " Person Name:" + dic[key]['Name'])
 
     if count == 0:
-     print("No one has birthdays in the next 30 days") 
+     print("No one has birthdays in the next 30 days")
+
+#US-39 List all living couples in a GEDCOM file whose marriage anniversaries occur in the next 30 days
+def listUpcomingAnniversaries(dic):
+    print("US-39: Printing all living couples who have anniversaries in the next 30 days")
+    count = 0
+    for key, value in dic.items():
+        currentDate = datetime.date.today()
+        birthday = list(dic[key]['Marriage'].split('-'))
+        year = datetime.date.today().year
+        birthdayDate = datetime.date(year, int(birthday[1]), int(birthday[2]))
+        
+        if dic[key]['Divorce'] == 'N/A': 
+            days = (birthdayDate - currentDate).days
+            if days <= 30 and days > 0:
+                count += 1
+                print("Family ID: " + key + " Husband Name: " + dic[key]['Husband Name'] + " Wife Name: " + dic[key]['Wife Name'])
+
+    if count == 0:
+     print("No living couple has an anniversary in the next 30 days") 
 
 genFamilyParser()
 
