@@ -112,6 +112,7 @@ def genFamilyParser():
     us09(personDic, familyDic)
     listUpcomingBirthdays(personDic)
     listUpcomingAnniversaries(familyDic)
+    checkFewerThanFifteenSiblings(personDic, familyDic)
 
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
@@ -680,6 +681,17 @@ def listUpcomingAnniversaries(dic):
 
     if count == 0:
      print("No living couple has an anniversary in the next 30 days") 
+
+# US-15 There should be fewer than 15 siblings in a family
+def checkFewerThanFifteenSiblings(personDic, familyDic):
+    for key, family in familyDic.items():
+        children = getChildren(family, personDic)
+        count = 0
+        for child in children:
+            count = count + 1 
+            if count == 15:
+                print('Family ID is: ' + key)
+                print('US15: There should be fewer than 15 siblings in a family')
 
 genFamilyParser()
 
