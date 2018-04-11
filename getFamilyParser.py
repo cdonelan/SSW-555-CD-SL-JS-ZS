@@ -700,10 +700,15 @@ def checkSiblingsDoNotMarry(personDic, familyDic):
         children = getChildren(family, personDic)
         for child in children:
             childID = child["ID"]
-            partnersID = getPartnersID(childID, familyDic)
-            for otherChild in children:
-                if otherChild["ID"] in partnersID:
-                    print('US18:' + childID + " cannot marry " + otherChild["ID"] + " because they are siblings")               
+            partnersID = ""
+            for key, family in familyDic.items():
+                if family["Husband ID"] == childID:
+                    partnersID = family["Wife ID"]
+                if family["Wife ID"] == childID:
+                    partnersID = family["Husband ID"]
+                for child in children:
+                    if partnersID == child["ID"]:
+                        print('US18:' + childID + " cannot marry " + partnersID + " because they are siblings")               
 
 genFamilyParser()
 
