@@ -113,7 +113,8 @@ def genFamilyParser():
     listUpcomingBirthdays(personDic)
     listUpcomingAnniversaries(familyDic)
     checkFewerThanFifteenSiblings(personDic, familyDic)
-
+    checkSiblingsDoNotMarry(personDic, familyDic)
+    
     for key,val in sorted(personDic.items()):
         row = list([key, val['Name'], val['Sex'], val['Birthday'], val['Age'], val['Alive'], val['Death'], val['Child'], val['Spouse']])
         peopleTable.add_row(row)
@@ -692,6 +693,17 @@ def checkFewerThanFifteenSiblings(personDic, familyDic):
             if count == 15:
                 print('Family ID is: ' + key)
                 print('US15: There should be fewer than 15 siblings in a family')
+                
+# US-18 Siblings should not marry one another
+def checkSiblingsDoNotMarry(personDic, familyDic):
+    for key, family in familyDic.items():
+        children = getChildren(family, personDic)
+        for child in children:
+            childID = child["ID"]
+            partnersID = getPartnersID(childID, familyDic)
+            for otherChild in children:
+                if otherChild["ID"] in partnersID:
+                    print('US18:' + childID + " cannot marry " + otherChild["ID"] + " because they are siblings")               
 
 genFamilyParser()
 
